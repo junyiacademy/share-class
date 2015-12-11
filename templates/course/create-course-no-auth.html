@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}創造課程需登入{% endblock %}
+{% block css%}
+
+{% endblock%}
+{% block content %}
+<div class='row'>
+  <h1 class='text-center'>抱歉，您必須先登入才能創造課程</h1>
+</div>
+<div class='row'>
+  <h4 class='text-center'>系統將在5秒後轉回首頁...</h4>
+</div>
+
+
+{% endblock %}
+{% block javascript%}
+<script>
+  setTimeout(function() {window.location.replace("/");}, 5000)
+</script>
+{% endblock%}

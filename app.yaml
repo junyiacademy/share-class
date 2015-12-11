@@ -1,0 +1,28 @@
+application: share-course
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
+
+handlers:
+- url: /static
+  static_dir: static/
+
+- url: /img
+  static_dir: img/
+
+- url: /admin/.*
+  script: routes.app
+  login: admin
+
+- url: .*
+  script: routes.app
+
+builtins:
+- remote_api: on

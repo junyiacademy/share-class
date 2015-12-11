@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}新增課程{% endblock %}
+{% block css%}
+{% endblock%}
+{% block content %}
+<h1 class="page-header">新增課程</h1>
+<form method="POST" action="" enctype="multipart/form-data">
+  <div class="input-group">
+    <label for="course-name">課程名稱</label>
+    <input type="text" class="form-control" placeholder="課程名稱" id="course-name" name="course-name">
+  </div><br>
+  <div class="input-group">
+    <label for="grade-chunk">年段</label>
+    <select class="form-control" id="grade-chunk" name="grade-chunk">
+      <option value="">請選擇</option>
+      <option value="國小">國小</option>
+      <option value="國中">國中</option>
+      <option value="高中">高中</option>
+    </select>
+  </div><br>
+  <div class="input-group">
+    <label for="subject">科目</label>
+    <select class="form-control" id="subject" name="subject">
+      <option value="">請選擇</option>
+      <option value="國文">國文</option>
+      <option value="理化">理化</option>
+      <option value="物理">物理</option>
+      <option value="化學">化學</option>
+    </select>
+  </div><br>
+  <div class="input-group">
+    <label for="keywords">以逗號(,)分隔多個關鍵字</label>
+    <input type="text" class="form-control" placeholder='例：高中, 數學, 三角函數' id="keywords" name="keywords">
+  </div><br>
+  <div class="input-group">
+    <label for="difficulty">難易度</label>
+    <select class="form-control" id="difficulty" name="difficulty">
+      <option value="">請選擇</option>
+      <option value="易">易</option>
+      <option value="中">中</option>
+      <option value="難">難</option>
+    </select>
+  </div><br>
+  <div data-js='material-container' data-material-count="0">
+    <input name="material-count" style="display: none">
+    <h4 class="sub-header">講義：</h4>
+  </div>
+  <a data-js="add-new-material" style="margin-left:30px;">上傳更多講義</a>
+  <div class="input-group" style="margin-top:30px">
+    <label for="is_public">開放給全平台嗎？</label>
+    <select class="form-control" id="is_public" name="is_public">
+      <option value="">請選擇</option>
+      <option value="1">是</option>
+      <option value="0">否</option>
+    </select>
+  </div><br>
+  <button type="submit" class="btn btn-default">創造課程</button>
+</form>
+{% raw %}
+  <script data-js="material-handlebars" type="text/x-handlebars-template">
+    <div class="input-group" style="margin-left:30px">
+      <label for="material-name">{{count}}.講義名稱：</label>
+      <input type="text" class="form-control" placeholder="講義名稱" id="material-name" name="material-name-{{count}}">
+    </div><br>
+    <div class="input-group" style="margin-left:30px">
+      <label for="material-content">上傳講義(僅支援Word格式)：</label>
+      <input id="material" name="material-content-{{count}}" type="file" />
+    </div><br>
+  </script>
+{% endraw %}
+{% endblock %}
+{% block javascript%}
+<script>
+  function addNewMaterial() {
+    var source = $('[data-js="material-handlebars"]').html();
+    var template = Handlebars.compile(source);
+    var material_container = $('[data-js="material-container"]');
+    var material_count = material_container.data('material-count') + 1;
+    material_container.data('material-count', material_count);
+    $('[name="material-count"]').val(material_count);
+    var data = {count: material_count};
+    var html = template(data);
+    $('[data-js="material-container"]').append(html);
+  }
+  $(document).ready(function() { 
+    addNewMaterial();
+    $('[data-js="add-new-material"]').on('click', function() {addNewMaterial();});
+  });
+</script>
+{% endblock%}
