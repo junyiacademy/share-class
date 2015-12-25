@@ -17,7 +17,7 @@ app = webapp2.WSGIApplication([
                               # Admin
 
                               # Home Page
-                              (r'/', homepage.HomePage),
+                              (r'/', course.FindCourse),
 
                               # Course Page
                               (r'/create-course', course.CreateCourse),
@@ -27,6 +27,7 @@ app = webapp2.WSGIApplication([
                               (r'/material-download-update', course.MaterialDownloadUpdate),
                               (r'/course-comment-update', course.CommentUpdate),
                               # Login Page
+                              (r'/login-page', login.LoginPage),
                               (r'/logout', login.Logout),
                               (r'/login', login.Login),
 

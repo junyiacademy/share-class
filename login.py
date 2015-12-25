@@ -5,6 +5,23 @@ from google.appengine.api import users
 import logging
 
 
+class LoginPage(BaseHandler):
+
+    def get(self):
+
+        user = UserData.get_current_user()
+        if user:
+            self.redirect('/find-course')
+
+        google_login_url = users.create_login_url('/login')
+
+        data = {
+            'google_login_url': google_login_url
+        }
+
+        return self.render('home_page.html', data)
+
+
 class Login(BaseHandler):
 
     def get(self):
