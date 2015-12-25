@@ -98,7 +98,7 @@ class ShowCourse(BaseHandler):
         else:
             materials = [key.get() for key in course.materials]
             admins = [key.get().user_nickname for key in course.admins]
-            is_admin = user.key in course.admins
+            is_admin = user and user.key in course.admins
 
             comments = Comment.get_by_course(course)
             comments.sort(key=lambda x: x.created_time, reverse=False)
@@ -112,7 +112,6 @@ class ShowCourse(BaseHandler):
                 'admins': ', '.join(admins),
                 'materials': materials,
                 'is_admin': is_admin,
-                'user': user,
                 'comments': comments
             }
 
@@ -197,6 +196,8 @@ class MyCourse(BaseHandler):
 
     def get(self):
         user = UserData.get_current_user()
+        if user is None:
+            self.redirect('course/find-course')
         courses = Course.query(Course.admins == user.key).fetch()
         courses.sort(key=lambda x: x.get_avg_download_count(), reverse=True)
         keyword_str_list = []
@@ -209,7 +210,7 @@ class MyCourse(BaseHandler):
             'courses': courses,
             'keyword_str_list': keyword_str_list,
             'avg_download_count_list': avg_download_count_list
-        }  
+        }
 
         return self.render('course/my-course.html', data)
 

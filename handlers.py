@@ -4,6 +4,8 @@ import os
 import jinja2
 import webapp2
 from webapp2_extras import sessions
+from user_data.user_models import UserData
+
 
 
 JINJA_ENVIRONMENT = jinja2.Environment(
@@ -28,6 +30,8 @@ class BaseHandler(webapp2.RequestHandler):
             self.render('404.html')
 
     def render(self, template_name, data={}):
+        user = UserData.get_current_user()
+        data['user'] = user
         template = JINJA_ENVIRONMENT.get_template(template_name)
         self.response.write(template.render(data))
 

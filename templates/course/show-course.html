@@ -81,7 +81,9 @@
     </li>
     {% endfor %}
     </ul>
-    <textarea class="form-control" data-js="comment-input" rows="3"></textarea>
+    {% if user %} <!-- 沒有登入的人不提供留言功能 -->
+      <textarea class="form-control" data-js="comment-input" rows="3"></textarea>
+    {% endif %}
   </div>
 </div>
 
@@ -147,22 +149,24 @@
   $('[data-js="material_upload"]').on('click', function() {
     $(this).children().filter("[type=file]")[0].click();
   });
-  $('[data-js="comment-input"]').keydown(function(event) {
-    if (event.keyCode == 13) {
-      var content = this.value;
-      $.ajax({
-        url: "/course-comment-update",
-        method: "POST",
-        data: {'user_id': "{{user.key.id()}}", 'content': content, 'course_id': "{{course.key.id()}}"}
-      });
-      var source = $('[data-js="comment-handlebars"]').html();
-      var template = Handlebars.compile(source);
-      var data = {user_name: "{{user.user_nickname}}", created_time:new Date(), content:content};
-      var html = template(data);
-      $('[data-js="comments-list"]').append(html); 
-      this.value=""
+  {% if user %}
+    $('[data-js="comment-input"]').keydown(function(event) {
+      if (event.keyCode == 13) {
+        var content = this.value;
+        $.ajax({
+          url: "/course-comment-update",
+          method: "POST",
+          data: {'user_id': "{{user.key.id()}}", 'content': content, 'course_id': "{{course.key.id()}}"}
+        });
+        var source = $('[data-js="comment-handlebars"]').html();
+        var template = Handlebars.compile(source);
+        var data = {user_name: "{{user.user_nickname}}", created_time:new Date(), content:content};
+        var html = template(data);
+        $('[data-js="comments-list"]').append(html); 
+        this.value=""
 
-    }
-  });
+      }
+    });
+  {% endif %}
 </script>
 {% endblock%}
