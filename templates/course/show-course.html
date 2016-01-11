@@ -17,9 +17,9 @@
   <h4 class="sub-header">難易度：{{course.difficulty}}</h3>
   <h4 class="sub-header">關鍵字：{{keywords}}</h4>
   {% if is_admin %}
-    <h4 style="display: inline-block" class="sub-header">課程管理員：
+    <h4 style="display: inline-block" class="sub-header">課程管理員：</h4>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-admins" style="float:right">增加管理員</button>
-    {{admins}}</h4>
+    {{admins}}
     <!-- Button trigger modal -->
 
     <h4 class="sub-header">公開：{{course.is_public_chinese()}}
