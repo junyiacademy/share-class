@@ -35,12 +35,15 @@ class CreateCourse(BaseHandler):
         if not user:  # make sure user has an account to create course
             self.redirect('find-course')
 
-        material_count = int(self.request.get('material-count'))
+        material_index_list = self.request.get('material-index-list').split(',')
+        logging.info("material_index_list: %s" % material_index_list)
 
         material_list = []
-        for i in range(material_count):
-            material_name = self.request.get('material-name-%s' % str(i+1))
-            material_content = io.BytesIO(self.request.get('material-content-%s' % str(i+1)))
+        for i in material_index_list:
+            logging.info(type(i))
+            logging.info(i)
+            material_name = self.request.get('material-name-%s' % i)
+            material_content = io.BytesIO(self.request.get('material-content-%s' % i))
             material_file = google_drive_api.insert_file(service, material_name, material_content, google_drive_api.DOCX_MIME_TYPE)
             new_material = Material(material_name=material_name,
                                     related_file_id=material_file['id']

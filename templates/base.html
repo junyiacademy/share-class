@@ -8,6 +8,7 @@
     <!-- Bootstrap -->
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/dashboard.css" rel="stylesheet">
+    <link href="/static/css/icono.min.css" rel="stylesheet" type="text/css">
 {% block css %}
 {% endblock %}
 </head>
@@ -50,6 +51,24 @@
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/static/js/bootstrap.min.js"></script>
     <script src="/static/js/handlebars-v4.0.5.js"></script>
+    <script>
+      $.fn.serializeObject = function()
+      {
+          var o = {};
+          var a = this.serializeArray();
+          $.each(a, function() {
+              if (o[this.name] !== undefined) {
+                  if (!o[this.name].push) {
+                      o[this.name] = [o[this.name]];
+                  }
+                  o[this.name].push(this.value || '');
+              } else {
+                  o[this.name] = this.value || '';
+              }
+          });
+          return o;
+      };
+    </script>
 {% block javascript %}
 {% endblock %}
 </body>
