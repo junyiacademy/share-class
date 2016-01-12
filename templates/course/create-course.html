@@ -94,7 +94,7 @@
   function updateMaterialIndexList() {
     material_index_list = [];
     var material_container_array = $("[data-js='material-containers']").children("[data-js='material-container']");
-    for (var i=0; i<material_container_array.length; i++) {
+    for (var i = 0; i < material_container_array.length; i++) {
       material_index_list.push($(material_container_array[i]).data('index'));
     }
     $('[name="material-index-list"]').val(material_index_list);
@@ -122,8 +122,8 @@
     });
   }
 
-  var validatedDict = {"course-name": "課程名稱", "grade-chunk": "年段", "subject": "科目", 
-    "keywords":"關鍵字", "difficulty": "困難度", "material-name-1": "第一個講義名稱"};
+  var validatedDict = {"course-name": "課程名稱", "grade-chunk": "年段", "subject": "科目", "keywords":"關鍵字", "difficulty": "困難度"};
+
   function checkForm()
   {
     var error_str_list = [];
@@ -132,6 +132,20 @@
       if (form_data_dict[key] == "") {
         error_str_list.push(validatedDict[key] + "的欄位為空白")
       }
+    }
+    material_container_array = $("[data-js='material-containers']").children("[data-js='material-container']");
+    for (var i = 0; i < material_container_array.length; i++) {
+      var name_value = $(material_container_array[i]).find( "input[name*='material-name']").val();
+      var file_path = $(material_container_array[i]).find( "input[name*='material-content']").val();
+      if (name_value == "") {
+        error_str_list.push("第" + String(i+1) + "個講義名稱為空白");
+      } 
+      if (file_path == "") {
+        error_str_list.push("第" + String(i+1) + "個講義內容為空白")
+      }
+    }
+    if (form_data_dict['is_public'] == "") {
+      error_str_list.push("未選擇是否要公開課程")
     }
     error_string = error_str_list.join('、');
     if (error_string) {
@@ -143,12 +157,13 @@
       return true;
     }
   }
+
   $(document).ready(function() { 
     addNewMaterial();
     $('[data-js="add-new-material"]').on('click', function() {addNewMaterial();});
     $('[data-js="manually-submit"]').on('click', function() {
+      updateMaterialIndexList();
       if (checkForm()) {
-        updateMaterialIndexList();
         $('[data-js="create-course-form"]').submit();
       }
     });
