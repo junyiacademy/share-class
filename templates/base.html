@@ -9,6 +9,16 @@
     <link href="/static/css/bootstrap.min.css" rel="stylesheet">
     <link href="/static/css/dashboard.css" rel="stylesheet">
     <link href="/static/css/icono.min.css" rel="stylesheet" type="text/css">
+    <style>
+    /* link */
+    .navbar-inverse .navbar-nav > li > a {
+      color: #C8C8C8;
+    }
+    /* title */
+    .navbar-inverse .navbar-brand {
+      color: #C8C8C8;
+    }
+    </style>
 {% block css %}
 {% endblock %}
 </head>
@@ -23,13 +33,12 @@
             {% if user %}<li><a href="/my-course">我的課程</a></li>{% endif %}
             <li><a href="/create-course">創造課程</a></li>
           </ul>
-          <ul class="nav navbar-nav navbar-right">
+          <ul class="nav navbar-nav navbar-right" style="color:#C8C8C8">
             {% if user %}
               <li><a href="/logout">登出</a></li>
             {% else %}
               <li><a href="/login-page">登入</a></li>
             {% endif %}
-            }
           </ul>
           <!--<form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
