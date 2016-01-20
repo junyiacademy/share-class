@@ -7,14 +7,14 @@ import os
 GOOGLE_DOC_MIME_TYPE = 'application/vnd.google-apps.document'
 DOCX_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder'
-LOCAL_SHARE_COURSE_FOLDER_ID = "0B8EoFMWDwomTZUtwc0hrMHlHbTg"
-SERVER_SHARE_COURSE_FOLDER_ID = "0B9faigki2PhRSkhQUm51aGlyUWc"
+LOCAL_SHARE_CLASS_FOLDER_ID = "0B8EoFMWDwomTWnFpUzFXdnRTeFU"
+SERVER_SHARE_CLASS_FOLDER_ID = "0B-kp5lphrPvDV21zcnM3Yl9kRVE"
 IS_DEV_SERVER = (os.environ.get('SERVER_SOFTWARE', '').startswith('Development')
                      and not os.environ.get('FAKE_PROD_APPSERVER'))
 if IS_DEV_SERVER:
-    ROOT_FOLDER_ID = LOCAL_SHARE_COURSE_FOLDER_ID
+    ROOT_FOLDER_ID = LOCAL_SHARE_CLASS_FOLDER_ID
 else:
-    ROOT_FOLDER_ID = SERVER_SHARE_COURSE_FOLDER_ID
+    ROOT_FOLDER_ID = SERVER_SHARE_CLASS_FOLDER_ID
 
 
 def get_file_info(service, file_id):
