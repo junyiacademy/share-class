@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import os
-
 import jinja2
 import webapp2
+import json
 from webapp2_extras import sessions
 from user_data.user_models import UserData
 
@@ -34,6 +34,11 @@ class BaseHandler(webapp2.RequestHandler):
         data['user'] = user
         template = JINJA_ENVIRONMENT.get_template(template_name)
         self.response.write(template.render(data))
+
+    def render_json(self, obj):
+        json_string = json.dumps(obj)
+        self.response.content_type = "application/json"
+        self.response.out.write(json_string)
 
     def dispatch(self):
         # Get a session store for this request.

@@ -3,7 +3,7 @@ import logging
 
 
 class Subject(ndb.Model):  # work as nodes in tree
-    """The model class for product subject information. Supports building a
+    """The model class for producing subject information. Supports building a
     subject tree."""
 
     parent_key = ndb.KeyProperty()
@@ -49,3 +49,17 @@ class Subject(ndb.Model):  # work as nodes in tree
         for child in self.getChildrenSubjects():
             subject_dict['children'].append(child.getSubjectTreeDict())
         return subject_dict
+
+    @classmethod
+    def getSubjectByLevel(cls, level):
+        subject_list = cls.query(cls.level == level).fetch()
+        return subject_list
+
+    def deleteSubjectRecursive(self):
+
+        child_subject_list = self.getChildrenSubjects()
+        for child in child_subject_list:
+            child.deleteSubjectRecursive()
+
+        self.key.delete()
+        return None
