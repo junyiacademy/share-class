@@ -7,7 +7,7 @@ import os
 GOOGLE_DOC_MIME_TYPE = 'application/vnd.google-apps.document'
 DOCX_MIME_TYPE = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
 FOLDER_MIME_TYPE = 'application/vnd.google-apps.folder'
-LOCAL_SHARE_CLASS_FOLDER_ID = "0B8EoFMWDwomTWnFpUzFXdnRTeFU"
+LOCAL_SHARE_CLASS_FOLDER_ID = "0B3HUcH17Y4M9YWo1UnJnR2Q4NGs"
 SERVER_SHARE_CLASS_FOLDER_ID = "0B-kp5lphrPvDV21zcnM3Yl9kRVE"
 IS_DEV_SERVER = (os.environ.get('SERVER_SOFTWARE', '').startswith('Development')
                      and not os.environ.get('FAKE_PROD_APPSERVER'))
