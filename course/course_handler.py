@@ -40,14 +40,9 @@ class CreateCourse(BaseHandler):
 
         material_list = []
         for i in material_index_list:
-            logging.info(type(i))
-            logging.info(i)
             material_name = self.request.get('material-name-%s' % i)
             material_content = io.BytesIO(self.request.get('material-content-%s' % i))
-            logging.info(material_name)
-            logging.info(material_content)
             material_file = google_drive_api.insert_file(service, material_name, material_content, google_drive_api.DOCX_MIME_TYPE)
-            logging.info(material_file)
             new_material = Material(material_name=material_name,
                                     related_file_id=material_file['id']
                                     )

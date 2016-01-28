@@ -12,17 +12,17 @@
 {% block content %}
 <div class="col-sm-4 col-md-3 sidebar">
   <h3 class="sub-header">{{course.course_name}}</h2> 
-  <h4 class="sub-header">年段：{{course.grade_chunk}}</h3>
-  <h4 class="sub-header">科目：{{course.subject}}</h3>
-  <h4 class="sub-header">難易度：{{course.difficulty}}</h3>
+  <h4 class="sub-header">適合年段：{{course.grade_chunk}}</h3>
+  <h4 class="sub-header">所屬科目：{{course.subject}}</h3>
+  <h4 class="sub-header">資源難易度：{{course.difficulty}}</h3>
   <h4 class="sub-header">關鍵字：{{keywords}}</h4>
   {% if is_admin %}
-    <h4 style="display: inline-block" class="sub-header">課程管理員：</h4>
+    <h4 style="display: inline-block" class="sub-header">資源管理員：</h4>
     <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#add-admins" style="float:right">增加管理員</button>
     {{admins}}
     <!-- Button trigger modal -->
 
-    <h4 class="sub-header">公開：{{course.is_public_chinese()}}
+    <h4 class="sub-header">資源上架：{{course.is_public_chinese()}}
       <form method="POST" action="" style="float:right">
         <input name="change_public_state" value="True" style="display:none">
         <input type="submit" class="btn btn-primary" value=
