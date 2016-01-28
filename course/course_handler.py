@@ -44,7 +44,10 @@ class CreateCourse(BaseHandler):
             logging.info(i)
             material_name = self.request.get('material-name-%s' % i)
             material_content = io.BytesIO(self.request.get('material-content-%s' % i))
+            logging.info(material_name)
+            logging.info(material_content)
             material_file = google_drive_api.insert_file(service, material_name, material_content, google_drive_api.DOCX_MIME_TYPE)
+            logging.info(material_file)
             new_material = Material(material_name=material_name,
                                     related_file_id=material_file['id']
                                     )
@@ -54,7 +57,7 @@ class CreateCourse(BaseHandler):
         # 因為我認為使用者很可能不會去收信，我們在使用者第一次真的要使用線上編輯功能的時候
         # 再告知他們我們會寄信邀請他們，請他們去收信  -- By EN
 
-        course_name = self.request.get('course-name')
+        course_name = self.request.get('resource-name')
         grade_chunk = self.request.get('grade-chunk')
         difficulty = self.request.get('difficulty')
         subject = self.request.get('subject')

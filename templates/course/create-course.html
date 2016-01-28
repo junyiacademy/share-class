@@ -1,18 +1,18 @@
 {% extends "base.html" %}
 
-{% block title %}新增課程{% endblock %}
+{% block title %}新增教學資源{% endblock %}
 {% block css%}
 <link href="/static/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
 {% endblock%}
 {% block content %}
-<h1 class="page-header">新增課程</h1>
-<form method="POST" action="" enctype="multipart/form-data" data-js="create-course-form">
+<h1 class="page-header">新增教學資源</h1>
+<form method="POST" action="" enctype="multipart/form-data" data-js="create-resource-form">
   <div class="input-group">
-    <label for="course-name">課程名稱</label>
-    <input type="text" class="form-control" placeholder="課程名稱" id="course-name" name="course-name">
+    <label for="resource-name">資源名稱</label>
+    <input type="text" class="form-control" placeholder="資源名稱" id="resource-name" name="resource-name">
   </div><br>
   <div class="input-group">
-    <label for="grade-chunk">年段</label>
+    <label for="grade-chunk">適合年段</label>
     <select class="form-control" id="grade-chunk" name="grade-chunk">
       <option value="">請選擇</option>
       <option value="國小">國小</option>
@@ -21,7 +21,7 @@
     </select>
   </div><br>
   <div class="input-group">
-    <label for="subject">科目</label>
+    <label for="subject">所屬科目</label>
     <select class="form-control" id="subject" name="subject">
       <option value="">請選擇</option>
       <option value="國文">國文</option>
@@ -32,11 +32,11 @@
     </select>
   </div><br>
   <div class="input-group">
-    <label for="keywords">以逗號(,)分隔多個關鍵字</label>
+    <label for="keywords">關鍵字：<span style="color:gray; font-size: 12px">(以逗號(,)分隔多個關鍵字)</span></label>
     <input type="text" class="form-control" placeholder='例：高中, 數學, 三角函數' id="keywords" name="keywords">
   </div><br>
   <div class="input-group">
-    <label for="difficulty">難易度</label>
+    <label for="difficulty">資源難易度</label>
     <select class="form-control" id="difficulty" name="difficulty">
       <option value="">請選擇</option>
       <option value="易">易</option>
@@ -46,9 +46,9 @@
   </div><br>
   <div data-js='material-containers' data-material-index="0">
     <input name="material-index-list" style="display: none">
-    <h4 class="sub-header">講義：</h4>
+    <h4 class="sub-header">資源內容：<span style="color:gray; font-size: 14px">(例子：講義、考卷、學習單...)</span></h4>
   </div>
-  <a data-js="add-new-material" style="margin-left:30px;" class="btn btn-success">上傳更多講義 ＋</a>
+  <a data-js="add-new-material" style="margin-left:30px;" class="btn btn-success">上傳更多內容 ＋</a>
   <div class="input-group" style="margin-top:30px">
     <label for="is_public">開放給全平台嗎？</label>
     <select class="form-control" id="is_public" name="is_public">
@@ -60,16 +60,16 @@
 </form>
   <div class="alert alert-danger" role="alert" style="display:none" data-js="form-valid-alert">
   </div>
-  <button data-js="manually-submit" class="btn btn-primary">創造課程</button>
+  <button data-js="manually-submit" class="btn btn-primary">創造新的教學資源</button>
 {% raw %}
   <script data-js="material-handlebars" type="text/x-handlebars-template">
     <div class='row' style="margin-bottom:20px" data-js="material-container" data-index="{{index}}">
       <div class="input-group" style="margin-left:30px; display:inline-table">
-        <label>{{count}}.講義名稱：</label>
-        <input type="text" class="form-control" placeholder="講義名稱" name="material-name-{{count}}">
+        <label>{{count}}.內容名稱：</label>
+        <input type="text" class="form-control" placeholder="內容名稱" name="material-name-{{count}}">
       </div>
       <div class="input-group" style="display:inline-table">
-        <label>上傳證書：</label>
+        <label>內容檔案：</label>
         <input name="material-content-{{index}}" type="file" class="file-loading" data-js="material-content-upload-{{index}}">
       </div>
       {{#if can_remove}}
@@ -89,7 +89,7 @@
   function rearrangeMaterialCount() {
     var material_container_array = $("[data-js='material-containers']").children("[data-js='material-container']");
     for (var i=0; i<material_container_array.length; i++) {
-      $(material_container_array[i]).find('label').first().text(String(i+1)+'.講義名稱：');
+      $(material_container_array[i]).find('label').first().text(String(i+1)+'.內容名稱：');
     }
   }
   function updateMaterialIndexList() {
@@ -124,12 +124,12 @@
     });
   }
 
-  var validatedDict = {"course-name": "課程名稱", "grade-chunk": "年段", "subject": "科目", "keywords":"關鍵字", "difficulty": "困難度"};
+  var validatedDict = {"resource-name": "內容名稱", "grade-chunk": "年段", "subject": "科目", "keywords":"關鍵字", "difficulty": "困難度"};
 
   function checkForm()
   {
     var error_str_list = [];
-    var form_data_dict = $('[data-js="create-course-form"]').serializeObject();
+    var form_data_dict = $('[data-js="create-resource-form"]').serializeObject();
     for (key in validatedDict) {
       if (form_data_dict[key] == "") {
         error_str_list.push(validatedDict[key] + "的欄位為空白")
@@ -140,10 +140,10 @@
       var name_value = $(material_container_array[i]).find( "input[name*='material-name']").val();
       var file_path = $(material_container_array[i]).find( "input[name*='material-content']").val();
       if (name_value == "") {
-        error_str_list.push("第" + String(i+1) + "個講義名稱為空白");
+        error_str_list.push("第" + String(i+1) + "個內容名稱為空白");
       } 
       if (file_path == "") {
-        error_str_list.push("第" + String(i+1) + "個講義內容為空白")
+        error_str_list.push("第" + String(i+1) + "個內容內容為空白")
       }
     }
     if (form_data_dict['is_public'] == "") {
@@ -166,7 +166,7 @@
     $('[data-js="manually-submit"]').on('click', function() {
       updateMaterialIndexList();
       if (checkForm()) {
-        $('[data-js="create-course-form"]').submit();
+        $('[data-js="create-resource-form"]').submit();
       }
     });
   });

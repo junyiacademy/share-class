@@ -26,12 +26,12 @@
     <nav class="navbar navbar-inverse navbar-fixed-top">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand" href="/">教學資源共享平台</a>
+          <a class="navbar-brand" href="/">教學資源共享</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            {% if user %}<li><a href="/my-course">我的課程</a></li>{% endif %}
-            <li><a href="/create-course">創造課程</a></li>
+            {% if user %}<li><a href="/my-course">我的教學資源</a></li>{% endif %}
+            <li><a href="/create-course">創造新的資源</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right" style="color:#C8C8C8">
             {% if user %}
