@@ -7,6 +7,8 @@
 .customer_upload { position: relative; overflow: hidden; } 
 .customer_upload input[type=file] { position: absolute; right: 0; opacity: 0; margin: 0; padding: 0; border: none; }
 .comment { margin: 30px;}
+.loadImg { position:absolute;z-index:999;}
+.loadImg div {display:table-cell;width:500px;height:500px;text-align:center;vertical-align:middle;}
 </style>
 {% endblock%}
 {% block content %}
@@ -37,7 +39,8 @@
     <h1 class="page-header">{{material.material_name}}</h1>
     <div class="row">
       <div class="col-sm-5 col-md-6">
-        <iframe src="https://docs.google.com/viewer?url=https://docs.google.com/document/d/{{material.related_file_id}}/export?format%3Dpdf&embedded=true" style="width:1000px; height:1400px;" frameborder="0"></iframe>
+        <div class="loadImg" data-js="loadImg-{{loop.index}}"><div><img src="/img/loading.gif"/></div></div>
+        <iframe src="https://docs.google.com/viewer?url=https://docs.google.com/document/d/{{material.related_file_id}}/export?format%3Dpdf&embedded=true" style="width:1000px; height:1400px;" frameborder="0" onload="$('[data-js=\'loadImg-{{loop.index}}\']').hide()"></iframe>
         <form method="POST" action="" enctype="multipart/form-data">
           <div class="btn-group">
             <a type="button" class="btn btn-primary" href="https://docs.google.com/feeds/download/documents/export/Export?id={{material.related_file_id}}&exportFormat=docx" data-js="material_download" data-material-id="{{material.key.id()}}">下載</a>
