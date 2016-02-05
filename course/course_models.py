@@ -14,7 +14,7 @@ class Material(ndb.Model):
 
 class Course(ndb.Model):
 
-    course_name = ndb.StringProperty(default="", required=True)
+    course_name = ndb.StringProperty(required=True)
     grade_chunk = ndb.StringProperty(choices=[u'國小', u'國中', u'高中'])
     difficulty = ndb.StringProperty(choices=[u'易', u'中', u'難'])
     subject = ndb.StringProperty()

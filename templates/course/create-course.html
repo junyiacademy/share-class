@@ -126,14 +126,14 @@
     });
   }
 
-  var validatedDict = {"resource-name": "內容名稱", "grade-chunk": "年段", "subject": "科目", "keywords":"關鍵字", "difficulty": "困難度"};
+  var validatedDict = {"resource-name": "資源名稱", "grade-chunk": "年段", "subject": "科目", "keywords":"關鍵字", "difficulty": "困難度"};
 
   function checkForm()
   {
     var error_str_list = [];
     var form_data_dict = $('[data-js="create-resource-form"]').serializeObject();
     for (key in validatedDict) {
-      if (form_data_dict[key] == "") {
+      if (form_data_dict[key].replace(/ /g, '') == "") {
         error_str_list.push(validatedDict[key] + "的欄位為空白")
       }
     }
@@ -141,7 +141,7 @@
     for (var i = 0; i < material_container_array.length; i++) {
       var name_value = $(material_container_array[i]).find( "input[name*='material-name']").val();
       var file_path = $(material_container_array[i]).find( "input[name*='material-content']").val();
-      if (name_value == "") {
+      if (name_value.replace(/ /g, '') == "") {
         error_str_list.push("第" + String(i+1) + "個內容名稱為空白");
       } 
       if (file_path == "") {
