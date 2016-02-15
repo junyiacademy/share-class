@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from handlers import BaseHandler
-from course_models import Course, Material, KeyWordIndex
+from resource_models import Resource, Content, KeyWordIndex
 from datetime import timedelta
 from user_data.user_models import UserData
 from comment.comment_models import Comment
@@ -19,7 +19,7 @@ http = credentials.authorize(httplib2.Http(memcache))
 service = build('drive', 'v2', http=http)
 
 
-class CreateCourse(BaseHandler):
+class CreateResource(BaseHandler):
 
     def get(self):
         user = UserData.get_current_user()
@@ -43,11 +43,11 @@ class CreateCourse(BaseHandler):
             material_name = self.request.get('material-name-%s' % i)
             material_content = io.BytesIO(self.request.get('material-content-%s' % i))
             material_file = google_drive_api.insert_file(service, material_name, material_content, google_drive_api.DOCX_MIME_TYPE)
-            new_material = Material(material_name=material_name,
+            new_content = Content(material_name=material_name,
                                     related_file_id=material_file['id']
                                     )
-            new_material.put()
-            material_list.append(new_material.key)
+            new_content.put()
+            material_list.append(new_content.key)
         # 我們不在這個時候寄邀請信給使用者，請他同意獲得講義的writer權限
         # 因為我認為使用者很可能不會去收信，我們在使用者第一次真的要使用線上編輯功能的時候
         # 再告知他們我們會寄信邀請他們，請他們去收信  -- By EN
@@ -64,7 +64,7 @@ class CreateCourse(BaseHandler):
         keyword_list.append(subject)
         keyword_list.append(grade_chunk)
         keyword_list = set(keyword_list)
-        new_course = Course(course_name=course_name,
+        new_course = Resource(course_name=course_name,
                             grade_chunk=grade_chunk,
                             difficulty=difficulty,
                             subject=subject,
@@ -87,12 +87,12 @@ class CreateCourse(BaseHandler):
         self.redirect('/show-course/%s' % new_course.key.id())
 
 
-class ShowCourse(BaseHandler):
+class ShowResource(BaseHandler):
 
     def get(self, course_id):
 
         user = UserData.get_current_user()
-        course = Course.get_by_id(int(course_id))
+        course = Resource.get_by_id(int(course_id))
         if not course.is_visible_to_user(user):
             return self.render('course/show-course-no-auth.html')
 
@@ -120,17 +120,15 @@ class ShowCourse(BaseHandler):
 
     def post(self, course_id):
 
-        logging.info('into ShowCourse POST')
-
         # add new admins...
         user = UserData.get_current_user()
-        course = Course.get_by_id(int(course_id))
-        if not (user.key in course.admins):  # only admin can edit the course
+        resource = Resource.get_by_id(int(course_id))
+        if not (user.key in resource.admins):  # only admin can edit the course
             self.redirect('course/show-course/%s' % course_id)
 
         admins_email = self.request.get('admins-email')
         if admins_email:  # we will need to update the admin list
-            admin_key_list = course.admins
+            admin_key_list = resource.admins
             email_list = admins_email.strip().split(',')
 
             for email in email_list:
@@ -143,13 +141,13 @@ class ShowCourse(BaseHandler):
             # 再告知他們我們會寄信邀請他們，請他們去收信  -- By EN
 
             admin_key_list = set(admin_key_list)
-            course.admins = admin_key_list
+            resource.admins = admin_key_list
 
         change_public_state = self.request.get('change_public_state')
         if change_public_state:
-            course.is_public = not course.is_public
+            resource.is_public = not resource.is_public
 
-        course.put()
+        resource.put()
 
         material_uploaded = self.request.get('material_uploaded')
         if material_uploaded:
@@ -161,19 +159,18 @@ class ShowCourse(BaseHandler):
         self.redirect('/show-course/%s' % course_id)
 
 
-class FindCourse(BaseHandler):
+class FindResource(BaseHandler):
 
     def get(self):
 
-        logging.info("into FindCourse GET")
         user = UserData.get_current_user()
         keywords = self.request.get('keywords')
 
         if keywords:
             keywords = keywords.split(',')
-            courses = Course.list_courses_for_user(user, keywords, number=20)
+            courses = Resource.list_courses_for_user(user, keywords, number=20)
         else:
-            courses = Course.list_courses_for_user(user, number=20)
+            courses = Resource.list_courses_for_user(user, number=20)
         courses.sort(key=lambda x: x.get_avg_download_count(), reverse=True)
 
         keyword_str_list = []
@@ -193,13 +190,13 @@ class FindCourse(BaseHandler):
         return self.render('course/find-course.html', data)
 
 
-class MyCourse(BaseHandler):
+class MyResource(BaseHandler):
 
     def get(self):
         user = UserData.get_current_user()
         if user is None:
             self.redirect('course/find-course')
-        courses = Course.query(Course.admins == user.key).fetch()
+        courses = Resource.query(Resource.admins == user.key).fetch()
         courses.sort(key=lambda x: x.get_avg_download_count(), reverse=True)
         keyword_str_list = []
         avg_download_count_list = []
@@ -227,7 +224,7 @@ class CommentUpdate(BaseHandler):
             return
 
         course_id = self.request.get('course_id')
-        course = Course.get_by_id(int(course_id))
+        course = Resource.get_by_id(int(course_id))
         content = self.request.get('content')
 
         new_comment = Comment(parent=course.key,
@@ -238,12 +235,12 @@ class CommentUpdate(BaseHandler):
         return
 
 
-class MaterialDownloadUpdate(BaseHandler):
+class ContentDownloadUpdate(BaseHandler):
 
     def post(self):
 
         material_id = self.request.get('material-id')
-        material = Material.get_by_id(int(material_id))
+        material = Content.get_by_id(int(material_id))
         if material:
             material.download_count = material.download_count + 1
         material.put()

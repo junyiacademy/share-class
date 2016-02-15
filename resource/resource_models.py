@@ -4,22 +4,22 @@ from google.appengine.ext import ndb
 from user_data.user_models import UserData
 
 
-class Material(ndb.Model):
+class Content(ndb.Model):
 
-    material_name = ndb.StringProperty()
+    content_name = ndb.StringProperty()
     related_file_id = ndb.StringProperty()
     related_file_type = ndb.StringProperty(choices=['GOOGLE_DOC'], default='GOOGLE_DOC')
     download_count = ndb.IntegerProperty(default=0)
 
 
-class Course(ndb.Model):
+class Resource(ndb.Model):
 
-    course_name = ndb.StringProperty(required=True)
+    resource_name = ndb.StringProperty(required=True)
     grade_chunk = ndb.StringProperty(choices=[u'國小', u'國中', u'高中'])
     difficulty = ndb.StringProperty(choices=[u'易', u'中', u'難'])
     subject = ndb.StringProperty()
     keywords = ndb.StringProperty(repeated=True)
-    materials = ndb.KeyProperty(repeated=True, kind=Material)
+    contents = ndb.KeyProperty(repeated=True, kind=Content)
     # course_instruction = ndb.TextProperty(default="")
     creator = ndb.KeyProperty(required=True, kind=UserData)
     admins = ndb.KeyProperty(repeated=True, kind=UserData)
@@ -62,7 +62,7 @@ class Course(ndb.Model):
         return query.fetch(number)
 
     def get_avg_download_count(self):
-        download_count_list = [key.get().download_count for key in self.materials]
+        download_count_list = [key.get().download_count for key in self.contents]
         return sum(download_count_list) / len(download_count_list)
 
     def is_public_chinese(self):
@@ -75,7 +75,7 @@ class Course(ndb.Model):
 class KeyWordIndex(ndb.Model):
     key_word = ndb.StringProperty()
     related_subject = ndb.StringProperty()
-    course_count = ndb.IntegerProperty(default=1)
+    resource_count = ndb.IntegerProperty(default=1)
 
     @classmethod
     def get_by_keyword_and_subject(cls, keyword, subject):

@@ -4,7 +4,7 @@ import webapp2
 
 import homepage
 import login
-from course import course_handler
+from resource import resource_handler
 from subject import subject_handler
 
 config = {}
@@ -18,15 +18,15 @@ app = webapp2.WSGIApplication([
                               # Admin
 
                               # Home Page
-                              (r'/', course_handler.FindCourse),
+                              (r'/', resource_handler.FindResource),
 
                               # Course Page
-                              (r'/create-course', course_handler.CreateCourse),
-                              (r'/show-course/(\d+)', course_handler.ShowCourse),
-                              (r'/find-course', course_handler.FindCourse),
-                              (r'/my-course', course_handler.MyCourse),
-                              (r'/material-download-update', course_handler.MaterialDownloadUpdate),
-                              (r'/course-comment-update', course_handler.CommentUpdate),
+                              (r'/create-course', resource_handler.CreateResource),
+                              (r'/show-course/(\d+)', resource_handler.ShowResource),
+                              (r'/find-course', resource_handler.FindResource),
+                              (r'/my-course', resource_handler.MyResource),
+                              (r'/material-download-update', resource_handler.ContentDownloadUpdate),
+                              (r'/course-comment-update', resource_handler.CommentUpdate),
                               # Login Page
                               (r'/login-page', login.LoginPage),
                               (r'/logout', login.Logout),
