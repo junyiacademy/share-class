@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}新增教學資源{% endblock %}
+{% block css%}
+<link href="/static/css/fileinput.min.css" media="all" rel="stylesheet" type="text/css" />
+{% endblock%}
+{% block content %}
+<h1 class="page-header">新增教學資源</h1>
+<form method="POST" action="" enctype="multipart/form-data" data-js="create-resource-form">
+  <div class="input-group">
+    <label for="resource-name">資源名稱</label>
+    <input type="text" class="form-control" placeholder="資源名稱" id="resource-name" name="resource-name">
+  </div><br>
+  <div class="input-group">
+    <label for="grade-chunk">適合年段</label>
+    <select class="form-control" id="grade-chunk" name="grade-chunk">
+      <option value="">請選擇</option>
+      <option value="國小">國小</option>
+      <option value="國中">國中</option>
+      <option value="高中">高中</option>
+    </select>
+  </div><br>
+  <div class="input-group">
+    <label for="subject">所屬科目</label>
+    <select class="form-control" id="subject" name="subject">
+      <option value="">請選擇</option>
+      <option value="國文">國文</option>
+      <option value="生物">生物</option>
+      <option value="理化">理化</option>
+      <option value="物理">物理</option>
+      <option value="化學">化學</option>
+      <option value="數學">數學</option>
+
+    </select>
+  </div><br>
+  <div class="input-group">
+    <label for="keywords">關鍵字：<span style="color:gray; font-size: 12px">(以逗號(,)分隔多個關鍵字)</span></label>
+    <input type="text" class="form-control" placeholder='例：高中, 數學, 三角函數' id="keywords" name="keywords">
+  </div><br>
+  <div class="input-group">
+    <label for="difficulty">資源難易度</label>
+    <select class="form-control" id="difficulty" name="difficulty">
+      <option value="">請選擇</option>
+      <option value="易">易</option>
+      <option value="中">中</option>
+      <option value="難">難</option>
+    </select>
+  </div><br>
+  <div data-js='content-containers' data-content-index="0">
+    <input name="content-index-list" style="display: none">
+    <h4 class="sub-header">資源內容：<span style="color:gray; font-size: 14px">(例子：講義、考卷、學習單...)</span></h4>
+  </div>
+  <a data-js="add-new-content" style="margin-left:30px;" class="btn btn-success">上傳更多內容 ＋</a>
+  <div class="input-group" style="margin-top:30px">
+    <label for="is_public">開放給全平台嗎？</label>
+    <select class="form-control" id="is_public" name="is_public">
+      <option value="">請選擇</option>
+      <option value="1">是</option>
+      <option value="0">否</option>
+    </select>
+  </div><br>
+</form>
+  <div class="alert alert-danger" role="alert" style="display:none" data-js="form-valid-alert">
+  </div>
+  <button data-js="manually-submit" class="btn btn-primary">創造新的教學資源</button>
+{% raw %}
+  <script data-js="content-handlebars" type="text/x-handlebars-template">
+    <div class='row' style="margin-bottom:20px" data-js="content-container" data-index="{{index}}">
+      <div class="input-group" style="margin-left:30px; display:inline-table">
+        <label>{{count}}.內容名稱：</label>
+        <input type="text" class="form-control" placeholder="內容名稱" name="content-name-{{count}}">
+      </div>
+      <div class="input-group" style="display:inline-table">
+        <label>內容檔案：</label>
+        <input name="content-{{index}}" type="file" class="file-loading" data-js="content-upload-{{index}}">
+      </div>
+      {{#if can_remove}}
+        <div style="display:inline-table" class="btn" data-js="content-removal-{{index}}">
+          <i class="icono-cross"></i>
+        </div>
+      {{/if}}
+    </div>
+  </script>
+{% endraw %}
+{% endblock %}
+{% block javascript%}
+<script src="/static/js/canvas-to-blob.min.js" type="text/javascript"></script>
+<script src="/static/js/fileinput.min.js"></script>
+<script src="/static/js/fileinput_locale_zh-TW.js"></script>
+<script>
+  function rearrangecontentCount() {
+    var content_container_array = $("[data-js='content-containers']").children("[data-js='content-container']");
+    for (var i=0; i<content_container_array.length; i++) {
+      $(content_container_array[i]).find('label').first().text(String(i+1)+'.內容名稱：');
+    }
+  }
+  function updatecontentIndexList() {
+    content_index_list = [];
+    var content_container_array = $("[data-js='content-containers']").children("[data-js='content-container']");
+    for (var i = 0; i < content_container_array.length; i++) {
+      content_index_list.push($(content_container_array[i]).data('index'));
+    }
+    $('[name="content-index-list"]').val(content_index_list);
+  }
+  function addNewcontent() {
+    var source = $('[data-js="content-handlebars"]').html();
+    var template = Handlebars.compile(source);
+    var content_containers = $('[data-js="content-containers"]');
+    var content_index = content_containers.data('content-index') + 1;
+    content_containers.data('content-index', content_index);
+    var can_remove = (content_index > 1);
+    var count = $("[data-js='content-containers']").children("[data-js='content-container']").length + 1;
+    var data = {index: content_index, can_remove: can_remove, count:count};
+    var html = template(data);
+    $('[data-js="content-containers"]').append(html);
+    $('[data-js="content-upload-' + String(content_index) + '"]').fileinput({
+        language: 'zh-TW', 
+        showUpload: false,
+        showClose: false,
+        showPreview: false,
+        allowedFileExtensions: ['doc', 'docx'],
+    });
+    $('[data-js="content-removal-' + String(content_index) + '"]').on('click', function() {
+      $(this).parent().remove();
+      rearrangecontentCount();
+    });
+  }
+
+  var validatedDict = {"resource-name": "資源名稱", "grade-chunk": "年段", "subject": "科目", "keywords":"關鍵字", "difficulty": "困難度"};
+
+  function checkForm()
+  {
+    var error_str_list = [];
+    var form_data_dict = $('[data-js="create-resource-form"]').serializeObject();
+    for (key in validatedDict) {
+      if (form_data_dict[key].replace(/ /g, '') == "") {
+        error_str_list.push(validatedDict[key] + "的欄位為空白")
+      }
+    }
+    content_container_array = $("[data-js='content-containers']").children("[data-js='content-container']");
+    for (var i = 0; i < content_container_array.length; i++) {
+      var name_value = $(content_container_array[i]).find( "input[name*='content-name']").val();
+      var file_path = $(content_container_array[i]).find( "input[name*='content']").val();
+      if (name_value.replace(/ /g, '') == "") {
+        error_str_list.push("第" + String(i+1) + "個內容名稱為空白");
+      } 
+      if (file_path == "") {
+        error_str_list.push("第" + String(i+1) + "個內容內容為空白")
+      }
+    }
+    if (form_data_dict['is_public'] == "") {
+      error_str_list.push("未選擇是否要公開課程")
+    }
+    error_string = error_str_list.join('、');
+    if (error_string) {
+      $('[data-js="form-valid-alert"]').text(error_string).show();
+      return false;
+    }
+    else {
+      $('[data-js="form-valid-alert"]').hide();
+      return true;
+    }
+  }
+
+  $(document).ready(function() { 
+    addNewcontent();
+    $('[data-js="add-new-content"]').on('click', function() {addNewcontent();});
+    $('[data-js="manually-submit"]').on('click', function() {
+      updatecontentIndexList();
+      if (checkForm()) {
+        $('[data-js="create-resource-form"]').submit();
+      }
+    });
+  });
+
+</script>
+{% endblock%}

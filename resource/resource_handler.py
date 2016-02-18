@@ -23,36 +23,36 @@ class CreateResource(BaseHandler):
 
     def get(self):
         user = UserData.get_current_user()
-        if not user:  # make sure user has an account to create course
-            self.render('course/create-course-no-auth.html')
+        if not user:  # make sure user has an account to create resource
+            self.render('resource/create-resource-no-auth.html')
         else:
-            return self.render('course/create-course.html')
+            return self.render('resource/create-resource.html')
 
     def post(self):
 
-        # upload new material on google drive
+        # upload new content on google drive
         user = UserData.get_current_user()
-        if not user:  # make sure user has an account to create course
-            self.redirect('find-course')
+        if not user:  # make sure user has an account to create resource
+            self.redirect('find-resource')
 
-        material_index_list = self.request.get('material-index-list').split(',')
-        logging.info("material_index_list: %s" % material_index_list)
+        content_index_list = self.request.get('content-index-list').split(',')
+        logging.info("content_index_list: %s" % content_index_list)
 
-        material_list = []
-        for i in material_index_list:
-            material_name = self.request.get('material-name-%s' % i)
-            material_content = io.BytesIO(self.request.get('material-content-%s' % i))
-            material_file = google_drive_api.insert_file(service, material_name, material_content, google_drive_api.DOCX_MIME_TYPE)
-            new_content = Content(material_name=material_name,
-                                    related_file_id=material_file['id']
+        content_list = []
+        for i in content_index_list:
+            content_name = self.request.get('content-name-%s' % i)
+            content_content = io.BytesIO(self.request.get('content-%s' % i))
+            content_file = google_drive_api.insert_file(service, content_name, content_content, google_drive_api.DOCX_MIME_TYPE)
+            new_content = Content(content_name=content_name,
+                                    related_file_id=content_file['id']
                                     )
             new_content.put()
-            material_list.append(new_content.key)
+            content_list.append(new_content.key)
         # 我們不在這個時候寄邀請信給使用者，請他同意獲得講義的writer權限
         # 因為我認為使用者很可能不會去收信，我們在使用者第一次真的要使用線上編輯功能的時候
         # 再告知他們我們會寄信邀請他們，請他們去收信  -- By EN
 
-        course_name = self.request.get('resource-name')
+        resource_name = self.request.get('resource-name')
         grade_chunk = self.request.get('grade-chunk')
         difficulty = self.request.get('difficulty')
         subject = self.request.get('subject')
@@ -64,67 +64,67 @@ class CreateResource(BaseHandler):
         keyword_list.append(subject)
         keyword_list.append(grade_chunk)
         keyword_list = set(keyword_list)
-        new_course = Resource(course_name=course_name,
+        new_resource = Resource(resource_name=resource_name,
                             grade_chunk=grade_chunk,
                             difficulty=difficulty,
                             subject=subject,
                             keywords=keyword_list,
-                            materials=material_list,
+                            contents=content_list,
                             creator=user.key,
                             admins=[user.key],
                             is_public=is_public
                             )
-        new_course.put()
+        new_resource.put()
 
         for keyword in keyword_list:
             keywordindex = KeyWordIndex.get_by_keyword_and_subject(keyword, subject)
             if keywordindex:
-                keywordindex.course_count = keywordindex.course_count + 1
+                keywordindex.resource_count = keywordindex.resource_count + 1
             else:
                 keywordindex = KeyWordIndex(key_word=keyword, related_subject=subject)
             keywordindex.put()
 
-        self.redirect('/show-course/%s' % new_course.key.id())
+        self.redirect('/show-resource/%s' % new_resource.key.id())
 
 
 class ShowResource(BaseHandler):
 
-    def get(self, course_id):
+    def get(self, resource_id):
 
         user = UserData.get_current_user()
-        course = Resource.get_by_id(int(course_id))
-        if not course.is_visible_to_user(user):
-            return self.render('course/show-course-no-auth.html')
+        resource = Resource.get_by_id(int(resource_id))
+        if not resource.is_visible_to_user(user):
+            return self.render('resource/show-resource-no-auth.html')
 
         else:
-            materials = [key.get() for key in course.materials]
-            admins = [key.get().user_nickname for key in course.admins]
-            is_admin = user and user.key in course.admins
+            contents = [key.get() for key in resource.contents]
+            admins = [key.get().user_nickname for key in resource.admins]
+            is_admin = user and user.key in resource.admins
 
-            comments = Comment.get_by_course(course)
+            comments = Comment.get_by_resource(resource)
             comments.sort(key=lambda x: x.created_time, reverse=False)
             for comment in comments:
                 comment.created_time = comment.created_time + timedelta(hours=8)
                 comment.user_nickname = comment.comment_user.get().user_nickname
 
             data = {
-                'course': course,
-                'keywords': ', '.join(course.keywords),
+                'resource': resource,
+                'keywords': ', '.join(resource.keywords),
                 'admins': ', '.join(admins),
-                'materials': materials,
+                'contents': contents,
                 'is_admin': is_admin,
                 'comments': comments
             }
 
-            return self.render('course/show-course.html', data)
+            return self.render('resource/show-resource.html', data)
 
-    def post(self, course_id):
+    def post(self, resource_id):
 
         # add new admins...
         user = UserData.get_current_user()
-        resource = Resource.get_by_id(int(course_id))
-        if not (user.key in resource.admins):  # only admin can edit the course
-            self.redirect('course/show-course/%s' % course_id)
+        resource = Resource.get_by_id(int(resource_id))
+        if not (user.key in resource.admins):  # only admin can edit the resource
+            self.redirect('resource/show-resource/%s' % resource_id)
 
         admins_email = self.request.get('admins-email')
         if admins_email:  # we will need to update the admin list
@@ -149,14 +149,14 @@ class ShowResource(BaseHandler):
 
         resource.put()
 
-        material_uploaded = self.request.get('material_uploaded')
-        if material_uploaded:
-            new_material_content = io.BytesIO(material_uploaded)
-            material_file_id = self.request.get('material-related-file-id')
-            google_drive_api.update_file(service, material_file_id, new_material_content, google_drive_api.DOCX_MIME_TYPE)
-            logging.info("%s is uploaded" % material_file_id)
+        content_uploaded = self.request.get('content_uploaded')
+        if content_uploaded:
+            new_content_content = io.BytesIO(content_uploaded)
+            content_file_id = self.request.get('content-related-file-id')
+            google_drive_api.update_file(service, content_file_id, new_content_content, google_drive_api.DOCX_MIME_TYPE)
+            logging.info("%s is uploaded" % content_file_id)
 
-        self.redirect('/show-course/%s' % course_id)
+        self.redirect('/show-resource/%s' % resource_id)
 
 
 class FindResource(BaseHandler):
@@ -168,26 +168,26 @@ class FindResource(BaseHandler):
 
         if keywords:
             keywords = keywords.split(',')
-            courses = Resource.list_courses_for_user(user, keywords, number=20)
+            resources = Resource.list_resources_for_user(user, keywords, number=20)
         else:
-            courses = Resource.list_courses_for_user(user, number=20)
-        courses.sort(key=lambda x: x.get_avg_download_count(), reverse=True)
+            resources = Resource.list_resources_for_user(user, number=20)
+        resources.sort(key=lambda x: x.get_avg_download_count(), reverse=True)
 
         keyword_str_list = []
         avg_download_count_list = []
-        for course in courses:
-            keyword_str_list.append(', '.join(course.keywords))
-            avg_download_count_list.append(course.get_avg_download_count())
+        for resource in resources:
+            keyword_str_list.append(', '.join(resource.keywords))
+            avg_download_count_list.append(resource.get_avg_download_count())
 
         keyword_index_list = [i.key_word for i in KeyWordIndex.query().fetch()]
         data = {
-            'courses': courses,
+            'resources': resources,
             'keyword_str_list': keyword_str_list,
             'keyword_index_list': keyword_index_list,
             'avg_download_count_list': avg_download_count_list
         }
 
-        return self.render('course/find-course.html', data)
+        return self.render('resource/find-resource.html', data)
 
 
 class MyResource(BaseHandler):
@@ -195,22 +195,22 @@ class MyResource(BaseHandler):
     def get(self):
         user = UserData.get_current_user()
         if user is None:
-            self.redirect('course/find-course')
-        courses = Resource.query(Resource.admins == user.key).fetch()
-        courses.sort(key=lambda x: x.get_avg_download_count(), reverse=True)
+            self.redirect('resource/find-resource')
+        resources = Resource.query(Resource.admins == user.key).fetch()
+        resources.sort(key=lambda x: x.get_avg_download_count(), reverse=True)
         keyword_str_list = []
         avg_download_count_list = []
-        for course in courses:
-            keyword_str_list.append(', '.join(course.keywords))
-            avg_download_count_list.append(course.get_avg_download_count())
+        for resource in resources:
+            keyword_str_list.append(', '.join(resource.keywords))
+            avg_download_count_list.append(resource.get_avg_download_count())
 
         data = {
-            'courses': courses,
+            'resources': resources,
             'keyword_str_list': keyword_str_list,
             'avg_download_count_list': avg_download_count_list
         }
 
-        return self.render('course/my-course.html', data)
+        return self.render('resource/my-resource.html', data)
 
 
 class CommentUpdate(BaseHandler):
@@ -223,11 +223,11 @@ class CommentUpdate(BaseHandler):
         if user is None:
             return
 
-        course_id = self.request.get('course_id')
-        course = Resource.get_by_id(int(course_id))
+        resource_id = self.request.get('resource_id')
+        resource = Resource.get_by_id(int(resource_id))
         content = self.request.get('content')
 
-        new_comment = Comment(parent=course.key,
+        new_comment = Comment(parent=resource.key,
                               comment_user=user.key,
                               comment_content=content
                              )
@@ -239,10 +239,10 @@ class ContentDownloadUpdate(BaseHandler):
 
     def post(self):
 
-        material_id = self.request.get('material-id')
-        material = Content.get_by_id(int(material_id))
-        if material:
-            material.download_count = material.download_count + 1
-        material.put()
+        content_id = self.request.get('content-id')
+        content = Content.get_by_id(int(content_id))
+        if content:
+            content.download_count = content.download_count + 1
+        content.put()
 
         return

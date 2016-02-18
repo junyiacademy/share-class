@@ -20,7 +20,7 @@ class Resource(ndb.Model):
     subject = ndb.StringProperty()
     keywords = ndb.StringProperty(repeated=True)
     contents = ndb.KeyProperty(repeated=True, kind=Content)
-    # course_instruction = ndb.TextProperty(default="")
+    # resource_instruction = ndb.TextProperty(default="")
     creator = ndb.KeyProperty(required=True, kind=UserData)
     admins = ndb.KeyProperty(repeated=True, kind=UserData)
     is_public = ndb.BooleanProperty(default=False)
@@ -52,7 +52,7 @@ class Resource(ndb.Model):
         return query
 
     @classmethod
-    def list_courses_for_user(cls, user=None, keywords=None, number=20):
+    def list_resources_for_user(cls, user=None, keywords=None, number=20):
         query = cls.query()
         if keywords:
             query = cls.filter_by_keywords(query, keywords)

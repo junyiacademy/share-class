@@ -171,7 +171,7 @@ def insert_permission(service, file_id, value, perm_type, role):
 # google_drive_api.insert_file(service, 'myword123321', 'test for docx file', '0BwWPcLB3G5fncHlkVi1feEstV00', 'myword222.docx')
 
 # 讓可以創造一個資料夾：
-# google_drive_api.insert_folder(service, 'share-course', 'root')
+# google_drive_api.insert_folder(service, 'share-resource', 'root')
 
 
 # 讓可以給別的使用者權限：

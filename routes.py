@@ -20,13 +20,13 @@ app = webapp2.WSGIApplication([
                               # Home Page
                               (r'/', resource_handler.FindResource),
 
-                              # Course Page
-                              (r'/create-course', resource_handler.CreateResource),
-                              (r'/show-course/(\d+)', resource_handler.ShowResource),
-                              (r'/find-course', resource_handler.FindResource),
-                              (r'/my-course', resource_handler.MyResource),
-                              (r'/material-download-update', resource_handler.ContentDownloadUpdate),
-                              (r'/course-comment-update', resource_handler.CommentUpdate),
+                              # resource Page
+                              (r'/create-resource', resource_handler.CreateResource),
+                              (r'/show-resource/(\d+)', resource_handler.ShowResource),
+                              (r'/find-resource', resource_handler.FindResource),
+                              (r'/my-resource', resource_handler.MyResource),
+                              (r'/content-download-update', resource_handler.ContentDownloadUpdate),
+                              (r'/resource-comment-update', resource_handler.CommentUpdate),
                               # Login Page
                               (r'/login-page', login.LoginPage),
                               (r'/logout', login.Logout),
