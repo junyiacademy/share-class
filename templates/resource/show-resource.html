@@ -13,10 +13,10 @@
 {% endblock%}
 {% block content %}
 <div class="col-sm-4 col-md-3 sidebar">
-  <h3 class="sub-header">{{course.course_name}}</h2> 
-  <h4 class="sub-header">適合年段：{{course.grade_chunk}}</h3>
-  <h4 class="sub-header">所屬科目：{{course.subject}}</h3>
-  <h4 class="sub-header">資源難易度：{{course.difficulty}}</h3>
+  <h3 class="sub-header">{{resource.resource_name}}</h2> 
+  <h4 class="sub-header">適合年段：{{resource.grade_chunk}}</h3>
+  <h4 class="sub-header">所屬科目：{{resource.subject}}</h3>
+  <h4 class="sub-header">資源難易度：{{resource.difficulty}}</h3>
   <h4 class="sub-header">關鍵字：{{keywords}}</h4>
   {% if is_admin %}
     <h4 style="display: inline-block" class="sub-header">資源管理員：</h4>
@@ -24,37 +24,37 @@
     {{admins}}
     <!-- Button trigger modal -->
 
-    <h4 class="sub-header">資源上架：{{course.is_public_chinese()}}
+    <h4 class="sub-header">資源上架：{{resource.is_public_chinese()}}
       <form method="POST" action="" style="float:right">
         <input name="change_public_state" value="True" style="display:none">
         <input type="submit" class="btn btn-primary" value=
-      "{% if course.is_public %}不開放課程{% else %}開放課程{% endif %}">
+      "{% if resource.is_public %}不開放課程{% else %}開放課程{% endif %}">
       </form>
     </h4>
 
   {% endif %}
 </div>
 <div class="col-sm-9 col-sm-offset-4 col-md-10 col-md-offset-3 main">
-  {% for material in materials %}
-    <h1 class="page-header">{{material.material_name}}</h1>
+  {% for content in contents %}
+    <h1 class="page-header">{{content.content_name}}</h1>
     <div class="row">
       <div class="col-sm-5 col-md-6">
         <div class="loadImg" data-js="loadImg-{{loop.index}}"><div><img src="/img/loading.gif"/></div></div>
-        <iframe src="https://docs.google.com/viewer?url=https://docs.google.com/document/d/{{material.related_file_id}}/export?format%3Dpdf&embedded=true" style="width:1000px; height:1400px;" frameborder="0" onload="$('[data-js=\'loadImg-{{loop.index}}\']').hide()"></iframe>
+        <iframe src="https://docs.google.com/viewer?url=https://docs.google.com/document/d/{{content.related_file_id}}/export?format%3Dpdf&embedded=true" style="width:1000px; height:1400px;" frameborder="0" onload="$('[data-js=\'loadImg-{{loop.index}}\']').hide()"></iframe>
         <form method="POST" action="" enctype="multipart/form-data">
           <div class="btn-group">
-            <a type="button" class="btn btn-primary" href="https://docs.google.com/feeds/download/documents/export/Export?id={{material.related_file_id}}&exportFormat=docx" data-js="material_download" data-material-id="{{material.key.id()}}">下載</a>
+            <a type="button" class="btn btn-primary" href="https://docs.google.com/feeds/download/documents/export/Export?id={{content.related_file_id}}&exportFormat=docx" data-js="content_download" data-content-id="{{content.key.id()}}">下載</a>
             {% if is_admin %}
-            <div class="btn btn-success customer_upload" data-js="material_upload" type="button">上傳
-              <input name="material-related-file-id" style="display: none" value="{{material.related_file_id}}">
-              <input type="file" onchange="this.form.submit()" name="material_uploaded"/>
+            <div class="btn btn-success customer_upload" data-js="content_upload" type="button">上傳
+              <input name="content-related-file-id" style="display: none" value="{{content.related_file_id}}">
+              <input type="file" onchange="this.form.submit()" name="content_uploaded"/>
             </div>
-            <!--<button type="button" class="btn btn-success"data-js="material_upload" data-material-file-id="{{material.related_file_id}}">上傳</button>
-            <a type="button" class="btn btn-primary" href="https://docs.google.com/document/d/{{material.related_file_id}}/edit?usp=drive_web">線上編輯</a>-->
+            <!--<button type="button" class="btn btn-success"data-js="content_upload" data-content-file-id="{{content.related_file_id}}">上傳</button>
+            <a type="button" class="btn btn-primary" href="https://docs.google.com/document/d/{{content.related_file_id}}/edit?usp=drive_web">線上編輯</a>-->
             {% endif %}
           </div>
         </form>
-        <p style="margin-bottom: 50px">下載次數：{{material.download_count}}</p>
+        <p style="margin-bottom: 50px">下載次數：{{content.download_count}}</p>
       </div>
     </div>
   {% endfor %}
@@ -140,15 +140,15 @@
 {% endblock %}
 {% block javascript%}
 <script>
-  $('[data-js="material_download"]').on('click', function() {
-    var material_id = $(this).data('material-id');
+  $('[data-js="content_download"]').on('click', function() {
+    var content_id = $(this).data('content-id');
     $.ajax({
-      url: "/material-download-update",
+      url: "/content-download-update",
       method: "POST",
-      data: {'material-id': material_id}
+      data: {'content-id': content_id}
     });
   }); 
-  $('[data-js="material_upload"]').on('click', function() {
+  $('[data-js="content_upload"]').on('click', function() {
     $(this).children().filter("[type=file]")[0].click();
   });
   {% if user %}
@@ -156,9 +156,9 @@
       if (event.keyCode == 13) {
         var content = this.value;
         $.ajax({
-          url: "/course-comment-update",
+          url: "/resource-comment-update",
           method: "POST",
-          data: {'user_id': "{{user.key.id()}}", 'content': content, 'course_id': "{{course.key.id()}}"}
+          data: {'user_id': "{{user.key.id()}}", 'content': content, 'resource_id': "{{resource.key.id()}}"}
         });
         var source = $('[data-js="comment-handlebars"]').html();
         var template = Handlebars.compile(source);

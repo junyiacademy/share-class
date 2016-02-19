@@ -11,7 +11,7 @@ class LoginPage(BaseHandler):
 
         user = UserData.get_current_user()
         if user:
-            self.redirect('/find-course')
+            self.redirect('/find-resource')
 
         google_login_url = users.create_login_url('/login')
 
@@ -44,7 +44,7 @@ class Login(BaseHandler):
                                 user_nickname=google_user_property.nickname()
                                 )
             new_user.put()
-        self.redirect('/find-course')
+        self.redirect('/find-resource')
 
 
 class Logout(BaseHandler):

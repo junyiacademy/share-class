@@ -13,7 +13,7 @@ class UploadSubjectTree(BaseHandler):
 
         user = UserData.get_current_user()
         if not user.is_server_admin():
-            self.redirect('find-course')
+            self.redirect('find-resource')
 
         root_subjects = Subject.getSubjectByLevel(0)
         data = {
@@ -38,7 +38,7 @@ class UploadSubjectTree(BaseHandler):
 
         user = UserData.get_current_user()
         if not user.is_server_admin():
-            self.redirect('find-course')
+            self.redirect('find-resource')
 
         csv_file = self.request.get("subject-tree-csv")
         logging.info('csv file : %s' % csv_file)

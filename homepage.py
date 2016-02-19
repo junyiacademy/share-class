@@ -29,7 +29,7 @@ class HomePage(BaseHandler):
 
         user = UserData.get_current_user()
         if user:
-            self.redirect('/find-course')
+            self.redirect('/find-resource')
 
         google_login_url = users.create_login_url('/login')
 

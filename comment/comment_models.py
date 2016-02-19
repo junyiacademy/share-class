@@ -13,6 +13,6 @@ class Comment(ndb.Model):
     comment_parent = ndb.KeyProperty()
 
     @classmethod
-    def get_by_course(cls, course):
-        comments = cls.query(ancestor=course.key).fetch()
+    def get_by_resource(cls, resource):
+        comments = cls.query(ancestor=resource.key).fetch()
         return comments

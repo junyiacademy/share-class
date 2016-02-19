@@ -46,11 +46,11 @@
       <option value="難">難</option>
     </select>
   </div><br>
-  <div data-js='material-containers' data-material-index="0">
-    <input name="material-index-list" style="display: none">
+  <div data-js='content-containers' data-content-index="0">
+    <input name="content-index-list" style="display: none">
     <h4 class="sub-header">資源內容：<span style="color:gray; font-size: 14px">(例子：講義、考卷、學習單...)</span></h4>
   </div>
-  <a data-js="add-new-material" style="margin-left:30px;" class="btn btn-success">上傳更多內容 ＋</a>
+  <a data-js="add-new-content" style="margin-left:30px;" class="btn btn-success">上傳更多內容 ＋</a>
   <div class="input-group" style="margin-top:30px">
     <label for="is_public">開放給全平台嗎？</label>
     <select class="form-control" id="is_public" name="is_public">
@@ -64,18 +64,18 @@
   </div>
   <button data-js="manually-submit" class="btn btn-primary">創造新的教學資源</button>
 {% raw %}
-  <script data-js="material-handlebars" type="text/x-handlebars-template">
-    <div class='row' style="margin-bottom:20px" data-js="material-container" data-index="{{index}}">
+  <script data-js="content-handlebars" type="text/x-handlebars-template">
+    <div class='row' style="margin-bottom:20px" data-js="content-container" data-index="{{index}}">
       <div class="input-group" style="margin-left:30px; display:inline-table">
         <label>{{count}}.內容名稱：</label>
-        <input type="text" class="form-control" placeholder="內容名稱" name="material-name-{{count}}">
+        <input type="text" class="form-control" placeholder="內容名稱" name="content-name-{{count}}">
       </div>
       <div class="input-group" style="display:inline-table">
         <label>內容檔案：</label>
-        <input name="material-content-{{index}}" type="file" class="file-loading" data-js="material-content-upload-{{index}}">
+        <input name="content-{{index}}" type="file" class="file-loading" data-js="content-upload-{{index}}">
       </div>
       {{#if can_remove}}
-        <div style="display:inline-table" class="btn" data-js="material-removal-{{index}}">
+        <div style="display:inline-table" class="btn" data-js="content-removal-{{index}}">
           <i class="icono-cross"></i>
         </div>
       {{/if}}
@@ -88,41 +88,41 @@
 <script src="/static/js/fileinput.min.js"></script>
 <script src="/static/js/fileinput_locale_zh-TW.js"></script>
 <script>
-  function rearrangeMaterialCount() {
-    var material_container_array = $("[data-js='material-containers']").children("[data-js='material-container']");
-    for (var i=0; i<material_container_array.length; i++) {
-      $(material_container_array[i]).find('label').first().text(String(i+1)+'.內容名稱：');
+  function rearrangeContentCount() {
+    var content_container_array = $("[data-js='content-containers']").children("[data-js='content-container']");
+    for (var i=0; i<content_container_array.length; i++) {
+      $(content_container_array[i]).find('label').first().text(String(i+1)+'.內容名稱：');
     }
   }
-  function updateMaterialIndexList() {
-    material_index_list = [];
-    var material_container_array = $("[data-js='material-containers']").children("[data-js='material-container']");
-    for (var i = 0; i < material_container_array.length; i++) {
-      material_index_list.push($(material_container_array[i]).data('index'));
+  function updateContentIndexList() {
+    content_index_list = [];
+    var content_container_array = $("[data-js='content-containers']").children("[data-js='content-container']");
+    for (var i = 0; i < content_container_array.length; i++) {
+      content_index_list.push($(content_container_array[i]).data('index'));
     }
-    $('[name="material-index-list"]').val(material_index_list);
+    $('[name="content-index-list"]').val(content_index_list);
   }
-  function addNewMaterial() {
-    var source = $('[data-js="material-handlebars"]').html();
+  function addNewContent() {
+    var source = $('[data-js="content-handlebars"]').html();
     var template = Handlebars.compile(source);
-    var material_containers = $('[data-js="material-containers"]');
-    var material_index = material_containers.data('material-index') + 1;
-    material_containers.data('material-index', material_index);
-    var can_remove = (material_index > 1);
-    var count = $("[data-js='material-containers']").children("[data-js='material-container']").length + 1;
-    var data = {index: material_index, can_remove: can_remove, count:count};
+    var content_containers = $('[data-js="content-containers"]');
+    var content_index = content_containers.data('content-index') + 1;
+    content_containers.data('content-index', content_index);
+    var can_remove = (content_index > 1);
+    var count = $("[data-js='content-containers']").children("[data-js='content-container']").length + 1;
+    var data = {index: content_index, can_remove: can_remove, count:count};
     var html = template(data);
-    $('[data-js="material-containers"]').append(html);
-    $('[data-js="material-content-upload-' + String(material_index) + '"]').fileinput({
+    $('[data-js="content-containers"]').append(html);
+    $('[data-js="content-upload-' + String(content_index) + '"]').fileinput({
         language: 'zh-TW', 
         showUpload: false,
         showClose: false,
         showPreview: false,
         allowedFileExtensions: ['doc', 'docx'],
     });
-    $('[data-js="material-removal-' + String(material_index) + '"]').on('click', function() {
+    $('[data-js="content-removal-' + String(content_index) + '"]').on('click', function() {
       $(this).parent().remove();
-      rearrangeMaterialCount();
+      rearrangeContentCount();
     });
   }
 
@@ -137,10 +137,10 @@
         error_str_list.push(validatedDict[key] + "的欄位為空白")
       }
     }
-    material_container_array = $("[data-js='material-containers']").children("[data-js='material-container']");
-    for (var i = 0; i < material_container_array.length; i++) {
-      var name_value = $(material_container_array[i]).find( "input[name*='material-name']").val();
-      var file_path = $(material_container_array[i]).find( "input[name*='material-content']").val();
+    content_container_array = $("[data-js='content-containers']").children("[data-js='content-container']");
+    for (var i = 0; i < content_container_array.length; i++) {
+      var name_value = $(content_container_array[i]).find( "input[name*='content-name']").val();
+      var file_path = $(content_container_array[i]).find( "input[name*='content']").val();
       if (name_value.replace(/ /g, '') == "") {
         error_str_list.push("第" + String(i+1) + "個內容名稱為空白");
       } 
@@ -163,10 +163,10 @@
   }
 
   $(document).ready(function() { 
-    addNewMaterial();
-    $('[data-js="add-new-material"]').on('click', function() {addNewMaterial();});
+    addNewContent();
+    $('[data-js="add-new-content"]').on('click', function() {addNewContent();});
     $('[data-js="manually-submit"]').on('click', function() {
-      updateMaterialIndexList();
+      updateContentIndexList();
       if (checkForm()) {
         $('[data-js="create-resource-form"]').submit();
       }
