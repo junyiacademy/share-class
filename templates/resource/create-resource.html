@@ -88,13 +88,13 @@
 <script src="/static/js/fileinput.min.js"></script>
 <script src="/static/js/fileinput_locale_zh-TW.js"></script>
 <script>
-  function rearrangecontentCount() {
+  function rearrangeContentCount() {
     var content_container_array = $("[data-js='content-containers']").children("[data-js='content-container']");
     for (var i=0; i<content_container_array.length; i++) {
       $(content_container_array[i]).find('label').first().text(String(i+1)+'.內容名稱：');
     }
   }
-  function updatecontentIndexList() {
+  function updateContentIndexList() {
     content_index_list = [];
     var content_container_array = $("[data-js='content-containers']").children("[data-js='content-container']");
     for (var i = 0; i < content_container_array.length; i++) {
@@ -102,7 +102,7 @@
     }
     $('[name="content-index-list"]').val(content_index_list);
   }
-  function addNewcontent() {
+  function addNewContent() {
     var source = $('[data-js="content-handlebars"]').html();
     var template = Handlebars.compile(source);
     var content_containers = $('[data-js="content-containers"]');
@@ -122,7 +122,7 @@
     });
     $('[data-js="content-removal-' + String(content_index) + '"]').on('click', function() {
       $(this).parent().remove();
-      rearrangecontentCount();
+      rearrangeContentCount();
     });
   }
 
@@ -163,10 +163,10 @@
   }
 
   $(document).ready(function() { 
-    addNewcontent();
-    $('[data-js="add-new-content"]').on('click', function() {addNewcontent();});
+    addNewContent();
+    $('[data-js="add-new-content"]').on('click', function() {addNewContent();});
     $('[data-js="manually-submit"]').on('click', function() {
-      updatecontentIndexList();
+      updateContentIndexList();
       if (checkForm()) {
         $('[data-js="create-resource-form"]').submit();
       }

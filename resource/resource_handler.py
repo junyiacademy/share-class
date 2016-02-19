@@ -43,6 +43,7 @@ class CreateResource(BaseHandler):
             content_name = self.request.get('content-name-%s' % i)
             content_content = io.BytesIO(self.request.get('content-%s' % i))
             content_file = google_drive_api.insert_file(service, content_name, content_content, google_drive_api.DOCX_MIME_TYPE)
+
             new_content = Content(content_name=content_name,
                                     related_file_id=content_file['id']
                                     )
